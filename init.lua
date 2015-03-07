@@ -8,10 +8,9 @@ teleport = {}
 
 -- Teleport Portal recipe
 minetest.register_craft({
-	output = 'teleport_potion:potion',
-	recipe = {
-		{'vessels:glass_bottle', 'default:diamondblock', ''}
-	}
+ 	output = 'teleport_potion:potion',
+	type = "shapeless",
+ 	recipe = {'vessels:glass_bottle', 'default:diamondblock'}
 })
 
 -- Teleport Pad recipe
@@ -40,13 +39,13 @@ minetest.register_node("teleport_potion:portal", {
 
 	-- Start timer when portal appears
 	on_construct = function(pos)
-		minetest.env:get_node_timer(pos):start(10)
+		minetest.get_node_timer(pos):start(10)
 	end,
 
 	-- Remove portal after 10 seconds
 	on_timer = function(pos)
 		minetest.sound_play("portal_close", {pos = pos, gain = 1.0, max_hear_distance = 10,})
-		minetest.env:set_node(pos, {name="air"})
+		minetest.set_node(pos, {name="air"})
 	end,
 })
 
@@ -67,7 +66,7 @@ minetest.register_node("teleport_potion:potion", {
 
 	on_construct = function(pos)
 
-		local meta = minetest.env:get_meta(pos)
+		local meta = minetest.get_meta(pos)
 
 		-- Text entry formspec
 		meta:set_string("formspec", "field[text;;${text}]")
@@ -83,14 +82,14 @@ minetest.register_node("teleport_potion:potion", {
 
 	-- Right-click to enter new coords
 	on_right_click = function(pos, placer)
-		local meta = minetest.env:get_meta(pos)
+		local meta = minetest.get_meta(pos)
 	end,
 
 	-- Once entered, check coords and teleport, otherwise return potion
 	on_receive_fields = function(pos, formname, fields, sender)
 
 		local coords = teleport.coordinates(fields.text)
-		local meta = minetest.env:get_meta(pos)
+		local meta = minetest.get_meta(pos)
 		local name = sender:get_player_name()
 
 		if coords then	
@@ -108,8 +107,8 @@ minetest.register_node("teleport_potion:potion", {
 
 		else
 			minetest.chat_send_player(name, 'Potion failed!')
-			minetest.env:set_node(pos, {name="air"})
-			minetest.env:add_item(pos, 'teleport_potion:potion')
+			minetest.set_node(pos, {name="air"})
+			minetest.add_item(pos, 'teleport_potion:potion')
 		end
 	end,
 })
@@ -138,7 +137,7 @@ minetest.register_node("teleport_potion:pad", {
 
 	on_construct = function(pos)
 
-		local meta = minetest.env:get_meta(pos)
+		local meta = minetest.get_meta(pos)
 
 		-- Text entry formspec
 		meta:set_string("formspec", "field[text;;${text}]")
@@ -154,14 +153,14 @@ minetest.register_node("teleport_potion:pad", {
 
 	-- Right-click to enter new coords
 	on_right_click = function(pos, placer)
-		local meta = minetest.env:get_meta(pos)
+		local meta = minetest.get_meta(pos)
 	end,
 
 	-- Once entered, check coords and teleport, otherwise return potion
 	on_receive_fields = function(pos, formname, fields, sender)
 
 		local coords = teleport.coordinates(fields.text)
-		local meta = minetest.env:get_meta(pos)
+		local meta = minetest.get_meta(pos)
 		local name = sender:get_player_name()
 
 		if minetest.is_protected(pos, name) then
@@ -224,10 +223,10 @@ minetest.register_abm({
 	chance = 1,
 
 	action = function(pos, node, active_object_count, active_object_count_wider)
-		local objs = minetest.env:get_objects_inside_radius(pos, 1)
+		local objs = minetest.get_objects_inside_radius(pos, 1)
 		for k, player in pairs(objs) do
 			if player:get_player_name() then 
-				local meta = minetest.env:get_meta(pos)
+				local meta = minetest.get_meta(pos)
 				local target_coords={x=meta:get_float("x"), y=meta:get_float("y"), z=meta:get_float("z")}
 				minetest.sound_play("portal_close", {pos = pos, gain = 1.0, max_hear_distance = 5,})
 				player:moveto(target_coords, false)
