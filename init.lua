@@ -22,6 +22,7 @@ minetest.register_craft({
 		{"teleport_potion:potion", "default:glass", "teleport_potion:potion"}
 	}
 })
+
 -- Default coords
 teleport.default = {x=0, y=0, z=0}
 
@@ -31,6 +32,7 @@ minetest.register_node("teleport_potion:portal", {
 	tiles = {{name="portal.png", animation={type="vertical_frames", aspect_w=16, aspect_h=16, length=1.0}},},	
 	light_source = 12,
 	walkable = false,
+	paramtype = "light",
 	pointable = false,
 	buildable_to = true,
 	waving = 1,
@@ -224,10 +226,11 @@ minetest.register_abm({
 
 	action = function(pos, node, active_object_count, active_object_count_wider)
 		local objs = minetest.get_objects_inside_radius(pos, 1)
+		local meta, target_coords
 		for k, player in pairs(objs) do
 			if player:get_player_name() then 
-				local meta = minetest.get_meta(pos)
-				local target_coords={x=meta:get_float("x"), y=meta:get_float("y"), z=meta:get_float("z")}
+				meta = minetest.get_meta(pos)
+				target_coords={x=meta:get_float("x"), y=meta:get_float("y"), z=meta:get_float("z")}
 				minetest.sound_play("portal_close", {pos = pos, gain = 1.0, max_hear_distance = 5,})
 				player:moveto(target_coords, false)
 			end
