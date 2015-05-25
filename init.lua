@@ -13,7 +13,7 @@ minetest.register_craft({
  	recipe = {'vessels:glass_bottle', 'default:diamondblock'}
 })
 
--- Teleport Pad recipe
+--[[ Teleport Pad recipe
 minetest.register_craft({
 	output = 'teleport_potion:pad',
 	recipe = {
@@ -21,7 +21,7 @@ minetest.register_craft({
 		{"default:glass", "default:mese", "default:glass"},
 		{"teleport_potion:potion", "default:glass", "teleport_potion:potion"}
 	}
-})
+})]]
 
 -- Default coords
 teleport.default = {x=0, y=0, z=0}
@@ -233,6 +233,7 @@ minetest.register_abm({
 				target_coords={x=meta:get_float("x"), y=meta:get_float("y"), z=meta:get_float("z")}
 				minetest.sound_play("portal_close", {pos = pos, gain = 1.0, max_hear_distance = 5,})
 				player:moveto(target_coords, false)
+				minetest.sound_play("portal_close", {pos = target_coords, gain = 1.0, max_hear_distance = 5,})
 			end
 		end
 	end	
