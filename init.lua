@@ -13,7 +13,7 @@ minetest.register_craft({
  	recipe = {'vessels:glass_bottle', 'default:diamondblock'}
 })
 
---[[ Teleport Pad recipe
+-- Teleport Pad recipe
 minetest.register_craft({
 	output = 'teleport_potion:pad',
 	recipe = {
@@ -21,7 +21,7 @@ minetest.register_craft({
 		{"default:glass", "default:mese", "default:glass"},
 		{"teleport_potion:potion", "default:glass", "teleport_potion:potion"}
 	}
-})]]
+})
 
 -- Default coords
 teleport.default = {x=0, y=0, z=0}
