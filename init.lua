@@ -24,13 +24,22 @@ minetest.register_craft({
 })
 
 -- Default coords
-teleport.default = {x=0, y=0, z=0}
+teleport.default = {x = 0, y = 0, z = 0}
 
 -- Portal
 minetest.register_node("teleport_potion:portal", {
 	drawtype = "plantlike",
-	tiles = {{name="portal.png", animation={type="vertical_frames", aspect_w=16, aspect_h=16, length=1.0}},},	
-	light_source = 12,
+	tiles = {
+		{name="portal.png",
+			animation = {
+				type = "vertical_frames",
+				aspect_w = 16,
+				aspect_h = 16,
+				length = 1.0
+			}
+		}
+	},
+	light_source = default.LIGHT_MAX - 2,
 	walkable = false,
 	paramtype = "light",
 	pointable = false,
@@ -46,8 +55,12 @@ minetest.register_node("teleport_potion:portal", {
 
 	-- Remove portal after 10 seconds
 	on_timer = function(pos)
-		minetest.sound_play("portal_close", {pos = pos, gain = 1.0, max_hear_distance = 10,})
-		minetest.set_node(pos, {name="air"})
+		minetest.sound_play("portal_close", {
+			pos = pos,
+			gain = 1.0,
+			max_hear_distance = 10
+		})
+		minetest.set_node(pos, {name = "air"})
 	end,
 })
 
@@ -63,8 +76,8 @@ minetest.register_node("teleport_potion:potion", {
 	inventory_image = "potion.png",
 	wield_image = "potion.png",
 	metadata_name = "sign",
-	groups = {snappy=3, dig_immediate=3},
-	selection_box = {type = "wallmounted",},
+	groups = {snappy = 3, dig_immediate = 3},
+	selection_box = {type = "wallmounted"},
 
 	on_construct = function(pos)
 
@@ -96,7 +109,7 @@ minetest.register_node("teleport_potion:potion", {
 
 		if coords then	
 
-			minetest.add_node(pos, {name="teleport_potion:portal"})
+			minetest.add_node(pos, {name = "teleport_potion:portal"})
 
 			local newmeta = minetest.get_meta(pos)
 
@@ -105,11 +118,15 @@ minetest.register_node("teleport_potion:potion", {
 			newmeta:set_float("z", coords.z)
 			newmeta:set_string("text", fields.text)
 
-			minetest.sound_play("portal_open", {pos = pos, gain = 1.0, max_hear_distance = 10,})
+			minetest.sound_play("portal_open", {
+				pos = pos,
+				gain = 1.0,
+				max_hear_distance = 10
+			})
 
 		else
 			minetest.chat_send_player(name, 'Potion failed!')
-			minetest.set_node(pos, {name="air"})
+			minetest.set_node(pos, {name = "air"})
 			minetest.add_item(pos, 'teleport_potion:potion')
 		end
 	end,
@@ -128,7 +145,7 @@ minetest.register_node("teleport_potion:pad", {
 	wield_image = "padd.png",
 	metadata_name = "sign",
 	light_source = 5,
-	groups = {snappy=3, dig_immediate=3},
+	groups = {snappy = 3, dig_immediate = 3},
 	node_box = {
 		type = "wallmounted",
 		wall_top    = {-0.5, 0.4375, -0.5, 0.5, 0.5, 0.5},
@@ -180,11 +197,14 @@ minetest.register_node("teleport_potion:pad", {
 			newmeta:set_string("text", fields.text)
 
 			meta:set_string("infotext", "Pad Active ("..coords.x..","..coords.y..","..coords.z..")")
-			minetest.sound_play("portal_open", {pos = pos, gain = 1.0, max_hear_distance = 10,})
+			minetest.sound_play("portal_open", {
+				pos = pos,
+				gain = 1.0,
+				max_hear_distance = 10
+			})
 
 		else
-			minetest.chat_send_player(name, 'Teleport Pad Coordinates failed!')
-
+			minetest.chat_send_player(name, 'Teleport Pad coordinates failed!')
 		end
 	end,
 })
@@ -195,17 +215,19 @@ teleport.coordinates = function(str)
 	if not str or str == "" then return nil end
 
 	-- Get coords from string
-	local x,y,z = string.match(str, "^(-?%d+),(-?%d+),(-?%d+)")
+	local x, y, z = string.match(str, "^(-?%d+),(-?%d+),(-?%d+)")
 
 	-- Check coords
-	if x==nil or string.len(x) > 6
-	or y==nil or string.len(y) > 6
-	or z==nil or string.len(z) > 6 then
+	if x == nil or string.len(x) > 6
+	or y == nil or string.len(y) > 6
+	or z == nil or string.len(z) > 6 then
 		return nil
 	end
 
 	-- Convert string coords to numbers
-	x = x + 0.0; y = y + 0.0; z = z + 0.0
+	x = x + 0.0
+	y = y + 0.0
+	z = z + 0.0
 
 	-- Are coords in map range ?
 	if x > 30900 or x < -30900
@@ -215,7 +237,7 @@ teleport.coordinates = function(str)
 	end
 
 	-- Return ok coords
-	return {x=x, y=y, z=z}
+	return {x = x, y = y, z = z}
 end
 
 -- Has player walked inside portal
@@ -230,10 +252,22 @@ minetest.register_abm({
 		for k, player in pairs(objs) do
 			if player:get_player_name() then 
 				meta = minetest.get_meta(pos)
-				target_coords={x=meta:get_float("x"), y=meta:get_float("y"), z=meta:get_float("z")}
-				minetest.sound_play("portal_close", {pos = pos, gain = 1.0, max_hear_distance = 5,})
+				target_coords={
+					x=meta:get_float("x"),
+					y=meta:get_float("y"),
+					z=meta:get_float("z")
+				}
+				minetest.sound_play("portal_close", {
+					pos = pos,
+					gain = 1.0,
+					max_hear_distance = 5
+				})
 				player:moveto(target_coords, false)
-				minetest.sound_play("portal_close", {pos = target_coords, gain = 1.0, max_hear_distance = 5,})
+				minetest.sound_play("portal_close", {
+					pos = target_coords,
+					gain = 1.0,
+					max_hear_distance = 5
+				})
 			end
 		end
 	end	
