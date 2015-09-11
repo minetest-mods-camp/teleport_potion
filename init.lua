@@ -119,7 +119,7 @@ minetest.register_node("teleport_potion:potion", {
 			newmeta:set_string("text", fields.text)
 
 			-- portal open effect and sound
-			effect(pos)
+			tp_effect(pos)
 
 			minetest.sound_play("portal_open", {
 				pos = pos,
@@ -241,7 +241,7 @@ teleport.coordinates = function(str)
 end
 
 -- particle effects
-function effect(pos)
+function tp_effect(pos)
 	minetest.add_particlespawner({
 		amount = 20,
 		time = 0.25,
@@ -293,7 +293,7 @@ minetest.register_abm({
 				player:moveto(target_coords, false)
 
 				-- paricle effects on arrival
-				effect(target_coords)
+				tp_effect(target_coords)
 
 				-- play sound on destination end
 				minetest.sound_play("portal_close", {
