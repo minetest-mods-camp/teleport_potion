@@ -108,7 +108,7 @@ minetest.register_node("teleport_potion:potion", {
 
 		if coords then
 
-			minetest.add_node(pos, {name = "teleport_potion:portal"})
+			minetest.set_node(pos, {name = "teleport_potion:portal"})
 
 			local newmeta = minetest.get_meta(pos)
 
