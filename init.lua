@@ -67,7 +67,7 @@ minetest.register_node("teleport_potion:portal", {
 
 -- teleport potion
 minetest.register_node("teleport_potion:potion", {
-	tile_images = {"pad.png"},
+	tiles = {"pad.png"},
 	drawtype = "signlike",
 	paramtype = "light",
 	paramtype2 = "wallmounted",
@@ -137,7 +137,7 @@ minetest.register_node("teleport_potion:potion", {
 
 -- teleport pad
 minetest.register_node("teleport_potion:pad", {
-	tile_images = {"padd.png"},
+	tiles = {"padd.png"},
 	drawtype = 'nodebox',
 	paramtype = "light",
 	paramtype2 = "wallmounted",
