@@ -94,16 +94,6 @@ minetest.register_node("teleport_potion:potion", {
 		meta:set_float("z", teleport.default.z)
 	end,
 
-on_use = function(itemstack, user)
-
-	throw_potion(itemstack, user)
-
-	if not minetest.setting_getbool("creative_mode") then
-		itemstack:take_item()
-		return itemstack
-	end
-end,
-
 	-- right-click to enter new coords
 	on_right_click = function(pos, placer)
 		local meta = minetest.get_meta(pos)
@@ -315,82 +305,3 @@ minetest.register_abm({
 		end
 	end
 })
-
--- Throwable potions
-
-local potion_entity = {
-	physical = false,
-	visual = "sprite",
-	visual_size = {x = 1.0, y = 1.0},
-	textures = {"potion.png"},
-	collisionbox = {0,0,0,0,0,0},
-	lastpos = {},
-	player = "",
-}
-
-potion_entity.on_step = function(self, dtime)
-
-	if not self.player then
-		self.object:remove()
-		return
-	end
-
-	local pos = self.object:getpos()
-	local node = minetest.get_node(pos)
-
-	if self.lastpos.x ~= nil then
-
-		if node.name ~= "air" then
-
-			if self.player ~= "" then
-				self.player:setpos(self.lastpos)
-
-				minetest.sound_play("portal_close", {
-					pos = self.lastpos,
-					gain = 1.0,
-					max_hear_distance = 5
-				})
-
-				tp_effect(self.lastpos)
-			end
-
-			self.object:remove()
-			return
-
-		end
-	end
-
-	self.lastpos = pos
-end
-
-minetest.register_entity("teleport_potion:potion_entity", potion_entity)
-
-function throw_potion(itemstack, player)
-
-	local playerpos = player:getpos()
-
-	local obj = minetest.add_entity({
-		x = playerpos.x,
-		y = playerpos.y + 1.5,
-		z = playerpos.z
-	}, "teleport_potion:potion_entity")
-
-	local dir = player:get_look_dir()
-	local velocity = 20
-
-	obj:setvelocity({
-		x = dir.x * velocity,
-		y = dir.y * velocity,
-		z = dir.z * velocity
-	})
-
-	obj:setacceleration({
-		x = dir.x * -3,
-		y = -9.5,
-		z = dir.z * -3
-	})
-
-	obj:setyaw(player:get_look_yaw() + math.pi)
-	obj:get_luaentity().player = player
-
-end
