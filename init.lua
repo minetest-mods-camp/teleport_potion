@@ -1,17 +1,20 @@
 
---= Teleport Potion mod 0.4 by TenPlus1
+--= Teleport Potion mod 0.5 by TenPlus1
 
 -- Create teleport potion or pad, place then right-click to enter coords
 -- and step onto pad or walk into the blue portal light, portal closes after
--- 10 seconds, pad remains...  SFX are license Free...
+-- 10 seconds, pad remains, potions are throwable...  SFX are license Free...
 
 teleport = {}
 
 -- teleport portal recipe
 minetest.register_craft({
- 	output = 'teleport_potion:potion',
-	type = "shapeless",
- 	recipe = {'vessels:glass_bottle', 'default:diamondblock'}
+	output = 'teleport_potion:potion',
+	recipe = {
+		{"", "default:diamond", ""},
+		{"default:diamond", "vessels:glass_bottle", "default:diamond"},
+		{"", "default:diamond", ""},
+	},
 })
 
 -- teleport pad recipe
@@ -94,15 +97,15 @@ minetest.register_node("teleport_potion:potion", {
 		meta:set_float("z", teleport.default.z)
 	end,
 
-on_use = function(itemstack, user)
+	on_use = function(itemstack, user)
 
-	throw_potion(itemstack, user)
+		throw_potion(itemstack, user)
 
-	if not minetest.setting_getbool("creative_mode") then
-		itemstack:take_item()
-		return itemstack
-	end
-end,
+		if not minetest.setting_getbool("creative_mode") then
+			itemstack:take_item()
+			return itemstack
+		end
+	end,
 
 	-- right-click to enter new coords
 	on_right_click = function(pos, placer)
@@ -319,7 +322,7 @@ minetest.register_abm({
 -- Throwable potions
 
 local potion_entity = {
-	physical = false,
+	physical = true,
 	visual = "sprite",
 	visual_size = {x = 1.0, y = 1.0},
 	textures = {"potion.png"},
@@ -336,13 +339,21 @@ potion_entity.on_step = function(self, dtime)
 	end
 
 	local pos = self.object:getpos()
-	local node = minetest.get_node(pos)
 
 	if self.lastpos.x ~= nil then
 
-		if node.name ~= "air" then
+		local vel = self.object:getvelocity()
+
+		-- only when potion hits something physical
+		if vel.x == 0
+		or vel.y == 0
+		or vel.z == 0 then
 
 			if self.player ~= "" then
+
+				-- round up coords to fix glitching through doors
+				self.lastpos = vector.round(self.lastpos)
+
 				self.player:setpos(self.lastpos)
 
 				minetest.sound_play("portal_close", {
