@@ -277,6 +277,7 @@ minetest.register_abm({
 	nodenames = {"teleport_potion:portal", "teleport_potion:pad"},
 	interval = 1,
 	chance = 1,
+	catch_up = false,
 
 	action = function(pos, node, active_object_count, active_object_count_wider)
 
