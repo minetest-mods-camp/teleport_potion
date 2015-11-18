@@ -43,7 +43,7 @@ minetest.register_node("teleport_potion:portal", {
 			}
 		}
 	},
-	light_source = default.LIGHT_MAX - 2,
+	light_source = 13,
 	walkable = false,
 	paramtype = "light",
 	pointable = false,
@@ -59,11 +59,13 @@ minetest.register_node("teleport_potion:portal", {
 
 	-- remove portal after 10 seconds
 	on_timer = function(pos)
+
 		minetest.sound_play("portal_close", {
 			pos = pos,
 			gain = 1.0,
 			max_hear_distance = 10
 		})
+
 		minetest.set_node(pos, {name = "air"})
 	end,
 })
@@ -97,6 +99,7 @@ minetest.register_node("teleport_potion:potion", {
 		meta:set_float("z", teleport.default.z)
 	end,
 
+	-- throw potion when used like tool
 	on_use = function(itemstack, user)
 
 		throw_potion(itemstack, user)
@@ -105,11 +108,6 @@ minetest.register_node("teleport_potion:potion", {
 			itemstack:take_item()
 			return itemstack
 		end
-	end,
-
-	-- right-click to enter new coords
-	on_right_click = function(pos, placer)
-		local meta = minetest.get_meta(pos)
 	end,
 
 	-- check if coords ok then open portal, otherwise return potion
@@ -176,7 +174,9 @@ minetest.register_node("teleport_potion:pad", {
 		-- text entry formspec
 		meta:set_string("formspec", "field[text;;${text}]")
 		meta:set_string("infotext", "Enter teleport coords (e.g 200,20,-200)")
-		meta:set_string("text", teleport.default.x..","..teleport.default.y..","..teleport.default.z)
+		meta:set_string("text", teleport.default.x
+			.. "," .. teleport.default.y
+			.. "," .. teleport.default.z)
 
 		-- set default coords
 		meta:set_float("x", teleport.default.x)
@@ -225,7 +225,9 @@ minetest.register_node("teleport_potion:pad", {
 
 teleport.coordinates = function(str)
 
-	if not str or str == "" then return nil end
+	if not str or str == "" then
+		return nil
+	end
 
 	-- get coords from string
 	local x, y, z = string.match(str, "^(-?%d+),(-?%d+),(-?%d+)")
@@ -283,7 +285,10 @@ minetest.register_abm({
 
 		-- check objects inside pad/portal
 		local objs = minetest.get_objects_inside_radius(pos, 1)
-		if #objs == 0 then return end
+
+		if #objs == 0 then
+			return
+		end
 
 		-- get coords from pad/portal
 		local meta = minetest.get_meta(pos)
