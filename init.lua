@@ -152,6 +152,7 @@ minetest.register_node("teleport_potion:pad", {
 	drawtype = 'nodebox',
 	paramtype = "light",
 	paramtype2 = "wallmounted",
+	legacy_wallmounted = true,
 	walkable = true,
 	sunlight_propagates = true,
 	description="Teleport Pad (place and right-click to enchant location)",
