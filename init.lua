@@ -300,6 +300,7 @@ minetest.register_abm({
 		}
 
 		for k, player in pairs(objs) do
+
 			if player:get_player_name() then
 
 				-- play sound on portal end
@@ -310,7 +311,7 @@ minetest.register_abm({
 				})
 
 				-- move player/object
-				player:moveto(target_coords, false)
+				player:setpos(target_coords)
 
 				-- paricle effects on arrival
 				tp_effect(target_coords)
@@ -373,6 +374,7 @@ potion_entity.on_step = function(self, dtime)
 			end
 
 			self.object:remove()
+
 			return
 
 		end
