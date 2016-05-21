@@ -1,5 +1,5 @@
 
---= Teleport Potion mod 0.6 by TenPlus1
+--= Teleport Potion mod 0.7 by TenPlus1
 
 -- Create teleport potion or pad, place then right-click to enter coords
 -- and step onto pad or walk into the blue portal light, portal closes after
@@ -15,7 +15,7 @@ local check_coordinates = function(str)
 	end
 
 	-- get coords from string
-	local x, y, z = string.match(str, "^(-?%d+),(-?%d+),(-?%d+)")
+	local x, y, z, desc = string.match(str, "^(-?%d+),(-?%d+),(-?%d+),?(.*)$")
 
 	-- check coords
 	if x == nil or string.len(x) > 6
@@ -37,7 +37,7 @@ local check_coordinates = function(str)
 	end
 
 	-- return ok coords
-	return {x = x, y = y, z = z}
+	return {x = x, y = y, z = z, desc = desc}
 end
 
 -- particle effects
@@ -210,7 +210,7 @@ minetest.register_node("teleport_potion:pad", {
 		local meta = minetest.get_meta(pos)
 
 		-- text entry formspec
-		meta:set_string("formspec", "field[text;Enter teleport coords (e.g. 200,20,-200);${text}]")
+		meta:set_string("formspec", "field[text;Enter teleport coords (e.g. 200,20,-200,Home);${text}]")
 		meta:set_string("infotext", "Right-click to enchant teleport location")
 		meta:set_string("text", pos.x .. "," .. pos.y .. "," .. pos.z)
 
@@ -241,8 +241,13 @@ minetest.register_node("teleport_potion:pad", {
 			meta:set_int("z", coords.z)
 			meta:set_string("text", fields.text)
 
-			meta:set_string("infotext", "Pad Active ("
-				.. coords.x .. "," .. coords.y .. "," .. coords.z .. ")")
+			if coords.desc and coords.desc ~= "" then
+
+				meta:set_string("infotext", "Teleport to " .. coords.desc)
+			else
+				meta:set_string("infotext", "Pad Active ("
+					.. coords.x .. "," .. coords.y .. "," .. coords.z .. ")")
+			end
 
 			minetest.sound_play("portal_open", {
 				pos = pos,
