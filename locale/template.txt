@@ -1,0 +1,12 @@
+# Template for translations of teleport_potion mod
+# last update: 2016/May/27
+
+Teleport Potion (place and right-click to enchant location) = 
+Enter teleport coords (e.g. 200,20,-200) = 
+Right-click to enchant teleport location = 
+Potion failed! = 
+Teleport Pad (place and right-click to enchant location) = 
+Enter teleport coords (e.g. 200,20,-200,Home) = 
+Teleport to @1 = 
+Pad Active (@1,@2,@3) = 
+Teleport Pad coordinates failed! = 

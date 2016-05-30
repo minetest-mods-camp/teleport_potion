@@ -5,6 +5,27 @@
 -- and step onto pad or walk into the blue portal light, portal closes after
 -- 10 seconds, pad remains, potions are throwable...  SFX are license Free...
 
+-- Intllib
+local S
+if minetest.get_modpath("intllib") then
+	S = intllib.Getter()
+else
+	S = function(s, a, ...)
+		if a == nil then
+			return s
+		end
+		a = {a, ...}
+		return s:gsub("(@?)@(%(?)(%d+)(%)?)",
+			function(e, o, n, c)
+				if e == "" then
+					return a[tonumber(n)] .. (o == "" and c or "")
+				else
+					return "@" .. o .. n .. c
+				end
+			end)
+	end
+end
+
 -- max teleport distance
 local dist = tonumber(minetest.setting_get("map_generation_limit") or 31000)
 
@@ -107,7 +128,7 @@ minetest.register_node("teleport_potion:potion", {
 	paramtype2 = "wallmounted",
 	walkable = false,
 	sunlight_propagates = true,
-	description="Teleport Potion (place and right-click to enchant location)",
+	description = S("Teleport Potion (place and right-click to enchant location)"),
 	inventory_image = "potion.png",
 	wield_image = "potion.png",
 	groups = {dig_immediate = 3},
@@ -118,8 +139,8 @@ minetest.register_node("teleport_potion:potion", {
 		local meta = minetest.get_meta(pos)
 
 		-- text entry formspec
-		meta:set_string("formspec", "field[text;Enter teleport coords (e.g. 200,20,-200);${text}]")
-		meta:set_string("infotext", "Right-click to enchant teleport location")
+		meta:set_string("formspec", "field[text;" .. S("Enter teleport coords (e.g. 200,20,-200)") .. ";${text}]")
+		meta:set_string("infotext", S("Right-click to enchant teleport location"))
 		meta:set_string("text", pos.x .. "," .. pos.y .. "," .. pos.z)
 
 		-- set default coords
@@ -166,16 +187,16 @@ minetest.register_node("teleport_potion:potion", {
 			})
 
 		else
-			minetest.chat_send_player(name, 'Potion failed!')
+			minetest.chat_send_player(name, S("Potion failed!"))
 			minetest.set_node(pos, {name = "air"})
-			minetest.add_item(pos, 'teleport_potion:potion')
+			minetest.add_item(pos, "teleport_potion:potion")
 		end
 	end,
 })
 
 -- teleport potion recipe
 minetest.register_craft({
-	output = 'teleport_potion:potion',
+	output = "teleport_potion:potion",
 	recipe = {
 		{"", "default:diamond", ""},
 		{"default:diamond", "vessels:glass_bottle", "default:diamond"},
@@ -192,7 +213,7 @@ minetest.register_node("teleport_potion:pad", {
 	legacy_wallmounted = true,
 	walkable = true,
 	sunlight_propagates = true,
-	description="Teleport Pad (place and right-click to enchant location)",
+	description = S("Teleport Pad (place and right-click to enchant location)"),
 	inventory_image = "padd.png",
 	wield_image = "padd.png",
 	light_source = 5,
@@ -210,8 +231,8 @@ minetest.register_node("teleport_potion:pad", {
 		local meta = minetest.get_meta(pos)
 
 		-- text entry formspec
-		meta:set_string("formspec", "field[text;Enter teleport coords (e.g. 200,20,-200,Home);${text}]")
-		meta:set_string("infotext", "Right-click to enchant teleport location")
+		meta:set_string("formspec", "field[text;" .. S("Enter teleport coords (e.g. 200,20,-200,Home)") .. ";${text}]")
+		meta:set_string("infotext", S("Right-click to enchant teleport location"))
 		meta:set_string("text", pos.x .. "," .. pos.y .. "," .. pos.z)
 
 		-- set default coords
@@ -243,10 +264,10 @@ minetest.register_node("teleport_potion:pad", {
 
 			if coords.desc and coords.desc ~= "" then
 
-				meta:set_string("infotext", "Teleport to " .. coords.desc)
+				meta:set_string("infotext", S("Teleport to @1", coords.desc))
 			else
-				meta:set_string("infotext", "Pad Active ("
-					.. coords.x .. "," .. coords.y .. "," .. coords.z .. ")")
+				meta:set_string("infotext", S("Pad Active (@1,@2,@3)",
+					coords.x, coords.y, coords.z))
 			end
 
 			minetest.sound_play("portal_open", {
@@ -256,7 +277,7 @@ minetest.register_node("teleport_potion:pad", {
 			})
 
 		else
-			minetest.chat_send_player(name, 'Teleport Pad coordinates failed!')
+			minetest.chat_send_player(name, S("Teleport Pad coordinates failed!"))
 		end
 	end,
 })
