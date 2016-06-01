@@ -310,6 +310,9 @@ minetest.register_abm({
 
 		-- get coords from pad/portal
 		local meta = minetest.get_meta(pos)
+
+		if not meta then return end -- errorcheck
+
 		local target_coords = {
 			x = meta:get_int("x"),
 			y = meta:get_int("y"),
