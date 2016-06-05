@@ -319,9 +319,9 @@ minetest.register_abm({
 			z = meta:get_int("z")
 		}
 
-		for k, player in pairs(objs) do
+		for n = 1, #objs do
 
-			if player then
+			if objs[n] then
 
 				-- play sound on portal end
 				minetest.sound_play("portal_close", {
@@ -331,7 +331,7 @@ minetest.register_abm({
 				})
 
 				-- move player/object
-				player:setpos(target_coords)
+				objs[n]:setpos(target_coords)
 
 				-- paricle effects on arrival
 				tp_effect(target_coords)
