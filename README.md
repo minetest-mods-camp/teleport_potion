@@ -5,7 +5,7 @@ This minetest mod adds both a teleportation potion and pad to the game
 https://forum.minetest.net/viewtopic.php?f=9&t=9234
 
 
-Changes:
+Change log:
 
 - 0.7 - Can now enter descriptions for teleport pads e.g. (0,12,0,Home)
 - 0.6 - Tweaked and tidied code, added map_generation_limit's

@@ -294,6 +294,7 @@ minetest.register_craft({
 
 -- check portal & pad, teleport any entities on top
 minetest.register_abm({
+	label = "Potion/Pad teleportation",
 	nodenames = {"teleport_potion:portal", "teleport_potion:pad"},
 	interval = 2,
 	chance = 1,
