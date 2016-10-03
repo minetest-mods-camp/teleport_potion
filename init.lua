@@ -1,5 +1,5 @@
 
---= Teleport Potion mod 0.7 by TenPlus1
+--= Teleport Potion mod 0.8 by TenPlus1
 
 -- Create teleport potion or pad, place then right-click to enter coords
 -- and step onto pad or walk into the blue portal light, portal closes after
@@ -206,10 +206,10 @@ minetest.register_craft({
 
 -- teleport pad
 minetest.register_node("teleport_potion:pad", {
-	tiles = {"padd.png"},
-	drawtype = 'nodebox',
+	tiles = {"padd.png", "padd.png^[transformFY"},
+	drawtype = "nodebox",
 	paramtype = "light",
-	paramtype2 = "wallmounted",
+	paramtype2 = "facedir",
 	legacy_wallmounted = true,
 	walkable = true,
 	sunlight_propagates = true,
@@ -219,12 +219,13 @@ minetest.register_node("teleport_potion:pad", {
 	light_source = 5,
 	groups = {snappy = 3},
 	node_box = {
-		type = "wallmounted",
-		wall_top    = {-0.5, 0.4375, -0.5, 0.5, 0.5, 0.5},
-		wall_bottom = {-0.5, -0.5, -0.5, 0.5, -0.4375, 0.5},
-		wall_side   = {-0.5, -0.5, -0.5, -0.4375, 0.5, 0.5},
+		type = "fixed",
+		fixed = {-0.5, -0.5, -0.5, 0.5, -6/16, 0.5}
 	},
-	selection_box = {type = "wallmounted"},
+	selection_box = {
+		type = "fixed",
+		fixed = {-0.5, -0.5, -0.5, 0.5, -6/16, 0.5}
+	},
 
 	on_construct = function(pos)
 
@@ -343,6 +344,25 @@ minetest.register_abm({
 					gain = 1.0,
 					max_hear_distance = 5
 				})
+
+				-- rotate player to look in pad placement direction
+				if objs[n]:is_player() then
+
+					local rot = node.param2
+					local yaw = 0
+
+					if rot == 0 or rot == 20 then
+						yaw = 0 -- north
+					elseif rot == 2 or rot == 22 then
+						yaw = 3.14 -- south
+					elseif rot == 1 or rot == 23 then
+						yaw = 4.71 -- west
+					elseif rot == 3 or rot == 21 then
+						yaw = 1.57 -- east
+					end
+
+					objs[n]:set_look_yaw(yaw)
+				end
 			end
 		end
 	end

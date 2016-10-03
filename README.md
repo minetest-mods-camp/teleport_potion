@@ -7,6 +7,7 @@ https://forum.minetest.net/viewtopic.php?f=9&t=9234
 
 Change log:
 
+- 0.8 - Teleport pads now have arrows showing direction player will face after use
 - 0.7 - Can now enter descriptions for teleport pads e.g. (0,12,0,Home)
 - 0.6 - Tweaked and tidied code, added map_generation_limit's
 - 0.5 - Added throwable potions
