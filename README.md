@@ -16,3 +16,5 @@ Change log:
 - 0.2 - Bug fixes
 - 0.1 - Added SFX
 - 0.0 - Initial release
+
+Lucky Blocks: 4

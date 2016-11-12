@@ -455,3 +455,17 @@ function throw_potion(itemstack, player)
 	obj:get_luaentity().player = player
 
 end
+
+-- add lucky blocks
+
+-- Teleport Potion mod
+if minetest.get_modpath("lucky_block") then
+	lucky_block:add_blocks({
+		{"dro", {"teleport_potion:potion"}, 2},
+		{"tel"},
+		{"dro", {"teleport_potion:pad"}, 1},
+		{"lig"},
+	})
+end
+
+print ("[MOD] Teleport Potion loaded")
