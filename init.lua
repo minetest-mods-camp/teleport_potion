@@ -7,27 +7,22 @@
 
 -- Intllib
 local S
+
 if minetest.get_modpath("intllib") then
 	S = intllib.Getter()
 else
-	S = function(s, a, ...)
-		if a == nil then
-			return s
-		end
-		a = {a, ...}
-		return s:gsub("(@?)@(%(?)(%d+)(%)?)",
-			function(e, o, n, c)
-				if e == "" then
-					return a[tonumber(n)] .. (o == "" and c or "")
-				else
-					return "@" .. o .. n .. c
-				end
-			end)
+	S = function(s, a, ...) a = {a, ...}
+		return s:gsub("@(%d+)", function(n)
+			return a[tonumber(n)]
+		end)
 	end
+
 end
+
 
 -- max teleport distance
 local dist = tonumber(minetest.setting_get("map_generation_limit") or 31000)
+
 
 local check_coordinates = function(str)
 
@@ -61,6 +56,7 @@ local check_coordinates = function(str)
 	return {x = x, y = y, z = z, desc = desc}
 end
 
+
 -- particle effects
 function tp_effect(pos)
 	minetest.add_particlespawner({
@@ -68,17 +64,19 @@ function tp_effect(pos)
 		time = 0.25,
 		minpos = pos,
 		maxpos = pos,
-		minvel = {x = -2, y = -2, z = -2},
+		minvel = {x = -2, y = 1, z = -2},
 		maxvel = {x = 2,  y = 2,  z = 2},
-		minacc = {x = -4, y = -4, z = -4},
-		maxacc = {x = 4, y = 4, z = 4},
+		minacc = {x = 0, y = -2, z = 0},
+		maxacc = {x = 0, y = -4, z = 0},
 		minexptime = 0.1,
 		maxexptime = 1,
 		minsize = 0.5,
-		maxsize = 1,
+		maxsize = 1.5,
 		texture = "particle.png",
+		glow = 15,
 	})
 end
+
 
 -- teleport portal
 minetest.register_node("teleport_potion:portal", {
@@ -119,6 +117,7 @@ minetest.register_node("teleport_potion:portal", {
 		minetest.set_node(pos, {name = "air"})
 	end,
 })
+
 
 -- teleport potion
 minetest.register_node("teleport_potion:potion", {
@@ -194,6 +193,7 @@ minetest.register_node("teleport_potion:potion", {
 	end,
 })
 
+
 -- teleport potion recipe
 minetest.register_craft({
 	output = "teleport_potion:potion",
@@ -203,6 +203,7 @@ minetest.register_craft({
 		{"", "default:diamond", ""},
 	},
 })
+
 
 -- teleport pad
 minetest.register_node("teleport_potion:pad", {
@@ -283,6 +284,7 @@ minetest.register_node("teleport_potion:pad", {
 	end,
 })
 
+
 -- teleport pad recipe
 minetest.register_craft({
 	output = 'teleport_potion:pad',
@@ -292,6 +294,7 @@ minetest.register_craft({
 		{"teleport_potion:potion", "default:glass", "teleport_potion:potion"}
 	}
 })
+
 
 -- check portal & pad, teleport any entities on top
 minetest.register_abm({
@@ -368,6 +371,7 @@ minetest.register_abm({
 	end
 })
 
+
 -- Throwable potion
 
 local potion_entity = {
@@ -426,6 +430,7 @@ end
 
 minetest.register_entity("teleport_potion:potion_entity", potion_entity)
 
+
 function throw_potion(itemstack, player)
 
 	local playerpos = player:getpos()
@@ -455,6 +460,7 @@ function throw_potion(itemstack, player)
 	obj:get_luaentity().player = player
 
 end
+
 
 -- add lucky blocks
 
