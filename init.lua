@@ -386,7 +386,7 @@ potion_entity.on_step = function(self, dtime)
 		return
 	end
 
-	local pos = self.object:getpos()
+	local pos = self.object:get_pos()
 
 	if self.lastpos.x ~= nil then
 
@@ -428,7 +428,7 @@ minetest.register_entity("teleport_potion:potion_entity", potion_entity)
 
 function throw_potion(itemstack, player)
 
-	local playerpos = player:getpos()
+	local playerpos = player:get_pos()
 
 	local obj = minetest.add_entity({
 		x = playerpos.x,
