@@ -11,8 +11,13 @@ local S, NS = dofile(MP.."/intllib.lua")
 
 
 -- max teleport distance
-local dist = tonumber(minetest.setting_get("map_generation_limit") or 31000)
+local dist = tonumber(minetest.settings:get("map_generation_limit") or 31000)
 
+-- creative check
+local creative_mode_cache = minetest.settings:get_bool("creative_mode")
+function is_creative(name)
+	return creative_mode_cache or minetest.check_player_privs(name, {creative = true})
+end
 
 local check_coordinates = function(str)
 
@@ -143,7 +148,7 @@ minetest.register_node("teleport_potion:potion", {
 
 		throw_potion(itemstack, user)
 
-		if not minetest.setting_getbool("creative_mode") then
+		if not is_creative(user:get_player_name()) then
 			itemstack:take_item()
 			return itemstack
 		end
