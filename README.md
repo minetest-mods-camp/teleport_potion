@@ -7,6 +7,7 @@ https://forum.minetest.net/viewtopic.php?f=9&t=9234
 
 Change log:
 
+- 1.0 - Added changes by maybe_dragon to bookmark teleport destination before using pads and potions
 - 0.9 - Update to newer functions, requires Minetest 0.4.16 to work.
 - 0.8 - Teleport pads now have arrows showing direction player will face after use
 - 0.7 - Can now enter descriptions for teleport pads e.g. (0,12,0,Home)
