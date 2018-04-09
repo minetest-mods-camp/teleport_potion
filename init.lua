@@ -15,7 +15,7 @@ local dist = tonumber(minetest.settings:get("map_generation_limit") or 31000)
 
 -- creative check
 local creative_mode_cache = minetest.settings:get_bool("creative_mode")
-function is_creative(name)
+local function is_creative(name)
 	return creative_mode_cache or minetest.check_player_privs(name, {creative = true})
 end
 
@@ -53,7 +53,7 @@ end
 
 
 -- particle effects
-function tp_effect(pos)
+local function tp_effect(pos)
 	minetest.add_particlespawner({
 		amount = 20,
 		time = 0.25,
@@ -74,7 +74,7 @@ end
 
 local teleport_destinations = {}
 
-function set_teleport_destination(playername, dest)
+local function set_teleport_destination(playername, dest)
 	teleport_destinations[playername] = dest
 	tp_effect(dest)
 	minetest.sound_play("portal_open", {
