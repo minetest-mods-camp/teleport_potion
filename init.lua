@@ -126,6 +126,95 @@ minetest.register_node("teleport_potion:portal", {
 	end,
 })
 
+
+-- Throwable potion
+local function throw_potion(itemstack, player)
+
+	local playerpos = player:get_pos()
+
+	local obj = minetest.add_entity({
+		x = playerpos.x,
+		y = playerpos.y + 1.5,
+		z = playerpos.z
+	}, "teleport_potion:potion_entity")
+
+	local dir = player:get_look_dir()
+	local velocity = 20
+
+	obj:setvelocity({
+		x = dir.x * velocity,
+		y = dir.y * velocity,
+		z = dir.z * velocity
+	})
+
+	obj:setacceleration({
+		x = dir.x * -3,
+		y = -9.5,
+		z = dir.z * -3
+	})
+
+	obj:setyaw(player:get_look_yaw() + math.pi)
+	obj:get_luaentity().player = player
+end
+
+
+local potion_entity = {
+	physical = true,
+	visual = "sprite",
+	visual_size = {x = 1.0, y = 1.0},
+	textures = {"potion.png"},
+	collisionbox = {0,0,0,0,0,0},
+	lastpos = {},
+	player = "",
+}
+
+potion_entity.on_step = function(self, dtime)
+
+	if not self.player then
+		self.object:remove()
+		return
+	end
+
+	local pos = self.object:get_pos()
+
+	if self.lastpos.x ~= nil then
+
+		local vel = self.object:getvelocity()
+
+		-- only when potion hits something physical
+		if vel.x == 0
+		or vel.y == 0
+		or vel.z == 0 then
+
+			if self.player ~= "" then
+
+				-- round up coords to fix glitching through doors
+				self.lastpos = vector.round(self.lastpos)
+
+				self.player:setpos(self.lastpos)
+
+				minetest.sound_play("portal_close", {
+					pos = self.lastpos,
+					gain = 1.0,
+					max_hear_distance = 5
+				})
+
+				tp_effect(self.lastpos)
+			end
+
+			self.object:remove()
+
+			return
+
+		end
+	end
+
+	self.lastpos = pos
+end
+
+minetest.register_entity("teleport_potion:potion_entity", potion_entity)
+
+
 --------------------------------------------------------------------------------
 --- Teleport potion
 --------------------------------------------------------------------------------
@@ -398,96 +487,6 @@ minetest.register_abm({
 		end
 	end
 })
-
-
--- Throwable potion
-
-local potion_entity = {
-	physical = true,
-	visual = "sprite",
-	visual_size = {x = 1.0, y = 1.0},
-	textures = {"potion.png"},
-	collisionbox = {0,0,0,0,0,0},
-	lastpos = {},
-	player = "",
-}
-
-potion_entity.on_step = function(self, dtime)
-
-	if not self.player then
-		self.object:remove()
-		return
-	end
-
-	local pos = self.object:get_pos()
-
-	if self.lastpos.x ~= nil then
-
-		local vel = self.object:getvelocity()
-
-		-- only when potion hits something physical
-		if vel.x == 0
-		or vel.y == 0
-		or vel.z == 0 then
-
-			if self.player ~= "" then
-
-				-- round up coords to fix glitching through doors
-				self.lastpos = vector.round(self.lastpos)
-
-				self.player:setpos(self.lastpos)
-
-				minetest.sound_play("portal_close", {
-					pos = self.lastpos,
-					gain = 1.0,
-					max_hear_distance = 5
-				})
-
-				tp_effect(self.lastpos)
-			end
-
-			self.object:remove()
-
-			return
-
-		end
-	end
-
-	self.lastpos = pos
-end
-
-minetest.register_entity("teleport_potion:potion_entity", potion_entity)
-
-
-function throw_potion(itemstack, player)
-
-	local playerpos = player:get_pos()
-
-	local obj = minetest.add_entity({
-		x = playerpos.x,
-		y = playerpos.y + 1.5,
-		z = playerpos.z
-	}, "teleport_potion:potion_entity")
-
-	local dir = player:get_look_dir()
-	local velocity = 20
-
-	obj:setvelocity({
-		x = dir.x * velocity,
-		y = dir.y * velocity,
-		z = dir.z * velocity
-	})
-
-	obj:setacceleration({
-		x = dir.x * -3,
-		y = -9.5,
-		z = dir.z * -3
-	})
-
-	obj:setyaw(player:get_look_yaw() + math.pi)
-	obj:get_luaentity().player = player
-
-end
 
 
 -- add lucky blocks
