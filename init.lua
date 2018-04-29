@@ -443,7 +443,10 @@ minetest.register_abm({
 
 		for n = 1, #objs do
 
-			if objs[n] then
+			local item = objs[n] and objs[n]:get_luaentity()
+			and objs[n]:get_luaentity().name or ""
+
+			if item ~= "itemframes:item" and item ~= "signs:text" then
 
 				-- play sound on portal end
 				minetest.sound_play("portal_close", {
