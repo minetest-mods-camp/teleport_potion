@@ -124,6 +124,8 @@ minetest.register_node("teleport_potion:portal", {
 
 		minetest.remove_node(pos)
 	end,
+	on_blast = function() end,
+	drop = {},
 })
 
 
@@ -367,9 +369,6 @@ minetest.register_node("teleport_potion:pad", {
 		}
 		minetest.show_formspec(name, "teleport_potion:set_destination", formspec)
 	end,
-
-	on_blast = function() end,
-	drop = {},
 })
 
 -- Check and set coordinates
