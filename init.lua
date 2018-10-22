@@ -143,19 +143,19 @@ local function throw_potion(itemstack, player)
 	local dir = player:get_look_dir()
 	local velocity = 20
 
-	obj:setvelocity({
+	obj:set_velocity({
 		x = dir.x * velocity,
 		y = dir.y * velocity,
 		z = dir.z * velocity
 	})
 
-	obj:setacceleration({
+	obj:set_acceleration({
 		x = dir.x * -3,
 		y = -9.5,
 		z = dir.z * -3
 	})
 
-	obj:setyaw(player:get_look_yaw() + math.pi)
+	obj:set_yaw(player:get_look_yaw() + math.pi)
 	obj:get_luaentity().player = player
 end
 
@@ -181,7 +181,7 @@ potion_entity.on_step = function(self, dtime)
 
 	if self.lastpos.x ~= nil then
 
-		local vel = self.object:getvelocity()
+		local vel = self.object:get_velocity()
 
 		-- only when potion hits something physical
 		if vel.x == 0
@@ -193,7 +193,7 @@ potion_entity.on_step = function(self, dtime)
 				-- round up coords to fix glitching through doors
 				self.lastpos = vector.round(self.lastpos)
 
-				self.player:setpos(self.lastpos)
+				self.player:set_pos(self.lastpos)
 
 				minetest.sound_play("portal_close", {
 					pos = self.lastpos,
@@ -445,10 +445,7 @@ minetest.register_abm({
 
 		for n = 1, #objs do
 
-			local item = objs[n] and objs[n]:get_luaentity()
-			and objs[n]:get_luaentity().name or ""
-
-			if item ~= "itemframes:item" and item ~= "signs:text" then
+			if objs[n]:is_player() then
 
 				-- play sound on portal end
 				minetest.sound_play("portal_close", {
@@ -457,8 +454,8 @@ minetest.register_abm({
 					max_hear_distance = 5
 				})
 
-				-- move player/object
-				objs[n]:setpos(target_coords)
+				-- move player
+				objs[n]:set_pos(target_coords)
 
 				-- paricle effects on arrival
 				tp_effect(target_coords)
@@ -471,23 +468,20 @@ minetest.register_abm({
 				})
 
 				-- rotate player to look in pad placement direction
-				if objs[n]:is_player() then
+				local rot = node.param2
+				local yaw = 0
 
-					local rot = node.param2
-					local yaw = 0
-
-					if rot == 0 or rot == 20 then
-						yaw = 0 -- north
-					elseif rot == 2 or rot == 22 then
-						yaw = 3.14 -- south
-					elseif rot == 1 or rot == 23 then
-						yaw = 4.71 -- west
-					elseif rot == 3 or rot == 21 then
-						yaw = 1.57 -- east
-					end
-
-					objs[n]:set_look_yaw(yaw)
+				if rot == 0 or rot == 20 then
+					yaw = 0 -- north
+				elseif rot == 2 or rot == 22 then
+					yaw = 3.14 -- south
+				elseif rot == 1 or rot == 23 then
+					yaw = 4.71 -- west
+				elseif rot == 3 or rot == 21 then
+					yaw = 1.57 -- east
 				end
+
+				objs[n]:set_look_yaw(yaw)
 			end
 		end
 	end
