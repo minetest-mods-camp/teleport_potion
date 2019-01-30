@@ -230,7 +230,7 @@ minetest.register_node("teleport_potion:potion", {
 	description = S("Teleport Potion (use to set destination; place to open portal)"),
 	inventory_image = "potion.png",
 	wield_image = "potion.png",
-	groups = {dig_immediate = 3},
+	groups = {dig_immediate = 3, vessel = 1},
 	selection_box = {type = "wallmounted"},
 
 	on_use = function(itemstack, user, pointed_thing)
