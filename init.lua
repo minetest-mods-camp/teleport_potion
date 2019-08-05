@@ -406,9 +406,9 @@ end)
 
 -- teleport pad recipe
 minetest.register_craft({
-	output = 'teleport_potion:pad',
+	output = "teleport_potion:pad",
 	recipe = {
-		{"teleport_potion:potion", 'default:glass', "teleport_potion:potion"},
+		{"teleport_potion:potion", "default:glass", "teleport_potion:potion"},
 		{"default:glass", "default:mese", "default:glass"},
 		{"teleport_potion:potion", "default:glass", "teleport_potion:potion"}
 	}
