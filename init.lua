@@ -155,7 +155,7 @@ local function throw_potion(itemstack, player)
 		z = dir.z * -3
 	})
 
-	obj:set_yaw(player:get_look_yaw() + math.pi)
+	obj:set_yaw(player:get_look_horizontal())
 	obj:get_luaentity().player = player
 end
 
