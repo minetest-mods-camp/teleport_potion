@@ -7,7 +7,7 @@ https://forum.minetest.net/viewtopic.php?f=9&t=9234
 
 Change log:
 
-- 1.1 - Using 0.4.16+ code changes, can only teleport players now
+- 1.1 - Using 0.4.16+ code changes, can only teleport players now, added MineClone2 crafts and spanish translation
 - 1.0 - Added changes by maybe_dragon to bookmark teleport destination before using pads and potions
 - 0.9 - Update to newer functions, requires Minetest 0.4.16 to work.
 - 0.8 - Teleport pads now have arrows showing direction player will face after use

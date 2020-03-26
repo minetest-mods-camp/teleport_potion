@@ -9,6 +9,8 @@
 local MP = minetest.get_modpath(minetest.get_current_modname())
 local S, NS = dofile(MP.."/intllib.lua")
 
+-- check for MineClone2
+local mcl = minetest.get_modpath("mcl_core")
 
 -- max teleport distance
 local dist = tonumber(minetest.settings:get("map_generation_limit") or 31000)
@@ -271,6 +273,16 @@ minetest.register_node("teleport_potion:potion", {
 })
 
 -- teleport potion recipe
+if mcl then
+minetest.register_craft({
+	output = "teleport_potion:potion",
+	recipe = {
+		{"", "mcl_core:diamond", ""},
+		{"mcl_core:diamond", "mcl_potions:glass_bottle", "mcl_core:diamond"},
+		{"", "mcl_core:diamond", ""},
+	},
+})
+else
 minetest.register_craft({
 	output = "teleport_potion:potion",
 	recipe = {
@@ -279,6 +291,7 @@ minetest.register_craft({
 		{"", "default:diamond", ""},
 	},
 })
+end
 
 --------------------------------------------------------------------------------
 --- Teleport pad
@@ -405,6 +418,16 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 end)
 
 -- teleport pad recipe
+if mcl then
+minetest.register_craft({
+	output = "teleport_potion:pad",
+	recipe = {
+		{"teleport_potion:potion", "mcl_core:glass", "teleport_potion:potion"},
+		{"mcl_core:glass", "mesecons:redstone", "mcl_core:glass"},
+		{"teleport_potion:potion", "mcl_core:glass", "teleport_potion:potion"},
+	},
+})
+else
 minetest.register_craft({
 	output = "teleport_potion:pad",
 	recipe = {
@@ -413,7 +436,7 @@ minetest.register_craft({
 		{"teleport_potion:potion", "default:glass", "teleport_potion:potion"}
 	}
 })
-
+end
 
 -- check portal & pad, teleport any entities on top
 minetest.register_abm({
