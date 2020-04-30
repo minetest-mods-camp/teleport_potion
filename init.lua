@@ -1,13 +1,13 @@
 
---= Teleport Potion mod by TenPlus1
+--= Teleport Potion mod by TenPlus1 (SFX are license free)
 
--- Create teleport potion or pad, place then right-click to enter coords
--- and step onto pad or walk into the blue portal light, portal closes after
--- 10 seconds, pad remains, potions are throwable...  SFX are license Free...
+-- Craft teleport potion or pad, use to bookmark location, place to open
+-- portal or place pad, portals show a blue flame that you can walk into
+-- before it closes (10 seconds), potions can also be thrown for local teleport.
 
 -- Load support for intllib.
 local MP = minetest.get_modpath(minetest.get_current_modname())
-local S, NS = dofile(MP.."/intllib.lua")
+local S, NS = dofile(MP .. "/intllib.lua")
 
 -- check for MineClone2
 local mcl = minetest.get_modpath("mcl_core")
@@ -83,7 +83,7 @@ local function set_teleport_destination(playername, dest)
 		pos = dest,
 		gain = 1.0,
 		max_hear_distance = 10
-	})
+	}, true)
 end
 
 --------------------------------------------------------------------------------
@@ -122,7 +122,7 @@ minetest.register_node("teleport_potion:portal", {
 			pos = pos,
 			gain = 1.0,
 			max_hear_distance = 10
-		})
+		}, true)
 
 		minetest.remove_node(pos)
 	end,
@@ -167,7 +167,7 @@ local potion_entity = {
 	visual = "sprite",
 	visual_size = {x = 1.0, y = 1.0},
 	textures = {"potion.png"},
-	collisionbox = {0,0,0,0,0,0},
+	collisionbox = {-0.1,-0.1,-0.1,0.1,0.1,0.1},
 	lastpos = {},
 	player = "",
 }
@@ -201,7 +201,7 @@ potion_entity.on_step = function(self, dtime)
 					pos = self.lastpos,
 					gain = 1.0,
 					max_hear_distance = 5
-				})
+				}, true)
 
 				tp_effect(self.lastpos)
 			end
@@ -223,7 +223,7 @@ minetest.register_entity("teleport_potion:potion_entity", potion_entity)
 --- Teleport potion
 --------------------------------------------------------------------------------
 minetest.register_node("teleport_potion:potion", {
-	tiles = {"pad.png"},
+	tiles = {"potion.png"},
 	drawtype = "signlike",
 	paramtype = "light",
 	paramtype2 = "wallmounted",
@@ -347,7 +347,7 @@ minetest.register_node("teleport_potion:pad", {
 			pos = pos,
 			gain = 1.0,
 			max_hear_distance = 10
-		})
+		}, true)
 	end,
 
 	-- Show formspec depending on the players privileges.
@@ -475,7 +475,7 @@ minetest.register_abm({
 					pos = pos,
 					gain = 1.0,
 					max_hear_distance = 5
-				})
+				}, true)
 
 				-- move player
 				objs[n]:set_pos(target_coords)
@@ -488,7 +488,7 @@ minetest.register_abm({
 					pos = target_coords,
 					gain = 1.0,
 					max_hear_distance = 5
-				})
+				}, true)
 
 				-- rotate player to look in pad placement direction
 				local rot = node.param2
