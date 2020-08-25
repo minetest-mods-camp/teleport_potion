@@ -5,9 +5,11 @@
 -- portal or place pad, portals show a blue flame that you can walk into
 -- before it closes (10 seconds), potions can also be thrown for local teleport.
 
+
 -- Load support for intllib.
 local MP = minetest.get_modpath(minetest.get_current_modname())
-local S, NS = dofile(MP .. "/intllib.lua")
+local S = minetest.get_translator and minetest.get_translator("teleport_potion") or
+		dofile(MP .. "/intllib.lua")
 
 -- check for MineClone2
 local mcl = minetest.get_modpath("mcl_core")
