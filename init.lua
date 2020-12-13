@@ -111,6 +111,7 @@ minetest.register_node("teleport_potion:portal", {
 	waving = 1,
 	sunlight_propagates = true,
 	damage_per_second = 1, -- walking into portal hurts player
+	groups = {not_in_creative_inventory = 1},
 
 	-- start timer when portal appears
 	on_construct = function(pos)
@@ -506,7 +507,7 @@ minetest.register_abm({
 					yaw = 1.57 -- east
 				end
 
-				objs[n]:set_look_yaw(yaw)
+				objs[n]:set_look_horizontal(yaw)
 			end
 		end
 	end
