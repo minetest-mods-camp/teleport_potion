@@ -19,10 +19,12 @@ local dist = tonumber(minetest.settings:get("map_generation_limit") or 31000)
 
 -- creative check
 local creative_mode_cache = minetest.settings:get_bool("creative_mode")
+
 local function is_creative(name)
 	return creative_mode_cache or minetest.check_player_privs(name, {creative = true})
 end
 
+-- make sure coordinates are valid
 local check_coordinates = function(str)
 
 	if not str or str == "" then
@@ -55,9 +57,9 @@ local check_coordinates = function(str)
 	return {x = x, y = y, z = z}
 end
 
-
 -- particle effects
 local function tp_effect(pos)
+
 	minetest.add_particlespawner({
 		amount = 20,
 		time = 0.25,
@@ -71,7 +73,7 @@ local function tp_effect(pos)
 		maxexptime = 1,
 		minsize = 0.5,
 		maxsize = 1.5,
-		texture = "particle.png",
+		texture = "teleport_potion_particle.png",
 		glow = 15,
 	})
 end
@@ -79,22 +81,21 @@ end
 local teleport_destinations = {}
 
 local function set_teleport_destination(playername, dest)
+
 	teleport_destinations[playername] = dest
+
 	tp_effect(dest)
+
 	minetest.sound_play("portal_open", {
-		pos = dest,
-		gain = 1.0,
-		max_hear_distance = 10
-	}, true)
+			pos = dest, gain = 1.0, max_hear_distance = 10}, true)
 end
 
---------------------------------------------------------------------------------
 --- Teleport portal
---------------------------------------------------------------------------------
 minetest.register_node("teleport_potion:portal", {
 	drawtype = "plantlike",
 	tiles = {
-		{name="portal.png",
+		{
+			name = "teleport_potion_portal.png",
 			animation = {
 				type = "vertical_frames",
 				aspect_w = 16,
@@ -122,17 +123,13 @@ minetest.register_node("teleport_potion:portal", {
 	on_timer = function(pos)
 
 		minetest.sound_play("portal_close", {
-			pos = pos,
-			gain = 1.0,
-			max_hear_distance = 10
-		}, true)
+				pos = pos, gain = 1.0, max_hear_distance = 10}, true)
 
 		minetest.remove_node(pos)
 	end,
 	on_blast = function() end,
-	drop = {},
+	drop = {}
 })
-
 
 -- Throwable potion
 local function throw_potion(itemstack, player)
@@ -164,21 +161,23 @@ local function throw_potion(itemstack, player)
 	obj:get_luaentity().player = player
 end
 
-
+-- potion entity
 local potion_entity = {
 	physical = true,
 	visual = "sprite",
 	visual_size = {x = 1.0, y = 1.0},
-	textures = {"potion.png"},
+	textures = {"teleport_potion_potion.png"},
 	collisionbox = {-0.1,-0.1,-0.1,0.1,0.1,0.1},
 	lastpos = {},
-	player = "",
+	player = ""
 }
 
 potion_entity.on_step = function(self, dtime)
 
 	if not self.player then
+
 		self.object:remove()
+
 		return
 	end
 
@@ -221,58 +220,63 @@ end
 
 minetest.register_entity("teleport_potion:potion_entity", potion_entity)
 
-
---------------------------------------------------------------------------------
 --- Teleport potion
---------------------------------------------------------------------------------
 minetest.register_node("teleport_potion:potion", {
-	tiles = {"potion.png"},
+	tiles = {"teleport_potion_potion.png"},
 	drawtype = "signlike",
 	paramtype = "light",
 	paramtype2 = "wallmounted",
 	walkable = false,
 	sunlight_propagates = true,
 	description = S("Teleport Potion (use to set destination; place to open portal)"),
-	inventory_image = "potion.png",
-	wield_image = "potion.png",
+	inventory_image = "teleport_potion_potion.png",
+	wield_image = "teleport_potion_potion.png",
 	groups = {dig_immediate = 3, vessel = 1},
 	selection_box = {type = "wallmounted"},
 
 	on_use = function(itemstack, user, pointed_thing)
+
 		if pointed_thing.type == "node" then
 			set_teleport_destination(user:get_player_name(), pointed_thing.above)
 		else
 			throw_potion(itemstack, user)
+
 			if not is_creative(user:get_player_name()) then
+
 				itemstack:take_item()
+
 				return itemstack
 			end
 		end
 	end,
 
 	after_place_node = function(pos, placer, itemstack, pointed_thing)
+
 		local name = placer:get_player_name()
 		local dest = teleport_destinations[name]
+
 		if dest then
+
 			minetest.set_node(pos, {name = "teleport_potion:portal"})
+
 			local meta = minetest.get_meta(pos)
+
 			-- Set portal destination
 			meta:set_int("x", dest.x)
 			meta:set_int("y", dest.y)
 			meta:set_int("z", dest.z)
+
 			-- Portal open effect and sound
 			tp_effect(pos)
+
 			minetest.sound_play("portal_open", {
-				pos = pos,
-				gain = 1.0,
-				max_hear_distance = 10
-			})
+					pos = pos, gain = 1.0, max_hear_distance = 10}, true)
 		else
 			minetest.chat_send_player(name, S("Potion failed!"))
 			minetest.remove_node(pos)
 			minetest.add_item(pos, "teleport_potion:potion")
 		end
-	end,
+	end
 })
 
 -- teleport potion recipe
@@ -296,13 +300,11 @@ minetest.register_craft({
 })
 end
 
---------------------------------------------------------------------------------
 --- Teleport pad
---------------------------------------------------------------------------------
 local teleport_formspec_context = {}
 
 minetest.register_node("teleport_potion:pad", {
-	tiles = {"padd.png", "padd.png^[transformFY"},
+	tiles = {"teleport_potion_pad.png", "teleport_potion_pad.png^[transformFY"},
 	drawtype = "nodebox",
 	paramtype = "light",
 	paramtype2 = "facedir",
@@ -310,8 +312,8 @@ minetest.register_node("teleport_potion:pad", {
 	walkable = true,
 	sunlight_propagates = true,
 	description = S("Teleport Pad (use to set destination; place to open portal)"),
-	inventory_image = "padd.png",
-	wield_image = "padd.png",
+	inventory_image = "teleport_potion_pad.png",
+	wield_image = "teleport_potion_pad.png",
 	light_source = 5,
 	groups = {snappy = 3},
 	node_box = {
@@ -325,6 +327,7 @@ minetest.register_node("teleport_potion:pad", {
 
 	-- Save pointed nodes coordinates as destination for further portals
 	on_use = function(itemstack, user, pointed_thing)
+
 		if pointed_thing.type == "node" then
 			set_teleport_destination(user:get_player_name(), pointed_thing.above)
 		end
@@ -332,12 +335,15 @@ minetest.register_node("teleport_potion:pad", {
 
 	-- Initialize teleport to saved location or the current position
 	after_place_node = function(pos, placer, itemstack, pointed_thing)
+
 		local meta = minetest.get_meta(pos)
 		local name = placer:get_player_name()
 		local dest = teleport_destinations[name]
+
 		if not dest then
 			dest = pos
 		end
+
 		-- Set coords
 		meta:set_int("x", dest.x)
 		meta:set_int("y", dest.y)
@@ -347,18 +353,18 @@ minetest.register_node("teleport_potion:pad", {
 				dest.x, dest.y, dest.z))
 
 		minetest.sound_play("portal_open", {
-			pos = pos,
-			gain = 1.0,
-			max_hear_distance = 10
-		}, true)
+				pos = pos,	 gain = 1.0, max_hear_distance = 10}, true)
 	end,
 
 	-- Show formspec depending on the players privileges.
 	on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
+
 		local name = clicker:get_player_name()
 
 		if minetest.is_protected(pos, name) then
+
 			minetest.record_protection_violation(pos, name)
+
 			return
 		end
 
@@ -370,8 +376,10 @@ minetest.register_node("teleport_potion:pad", {
 		}
 		local coords = coords.x .. "," .. coords.y .. "," .. coords.z
 		local desc = meta:get_string("desc")
+
 		formspec = "field[desc;" .. S("Description") .. ";"
 				.. minetest.formspec_escape(desc) .. "]"
+
 		-- Only allow privileged players to change coordinates
 		if minetest.check_player_privs(name, "teleport") then
 			formspec = formspec ..
@@ -383,23 +391,32 @@ minetest.register_node("teleport_potion:pad", {
 			coords = coords,
 			desc = desc,
 		}
+
 		minetest.show_formspec(name, "teleport_potion:set_destination", formspec)
-	end,
+	end
 })
 
 -- Check and set coordinates
 minetest.register_on_player_receive_fields(function(player, formname, fields)
+
 	if formname ~= "teleport_potion:set_destination" then
 		return false
 	end
+
 	local name = player:get_player_name()
 	local context = teleport_formspec_context[name]
+
 	if not context then return false end
+
 	teleport_formspec_context[name] = nil
+
 	local meta = minetest.get_meta(context.pos)
+
 	-- Coordinates were changed
 	if fields.coords and fields.coords ~= context.coords then
+
 		local coords = check_coordinates(fields.coords)
+
 		if coords then
 			meta:set_int("x", coords.x)
 			meta:set_int("y", coords.y)
@@ -408,15 +425,18 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			minetest.chat_send_player(name, S("Teleport Pad coordinates failed!"))
 		end
 	end
+
 	-- Update infotext
 	if fields.desc and fields.desc ~= "" then
 		meta:set_string("desc", fields.desc)
 		meta:set_string("infotext", S("Teleport to @1", fields.desc))
 	else
 		local coords = minetest.string_to_pos("(" .. context.coords .. ")")
+
 		meta:set_string("infotext", S("Pad Active (@1,@2,@3)",
 			coords.x, coords.y, coords.z))
 	end
+
 	return true
 end)
 
@@ -514,15 +534,14 @@ minetest.register_abm({
 })
 
 
--- add lucky blocks
-
--- Teleport Potion mod
+-- lucky blocks
 if minetest.get_modpath("lucky_block") then
+
 	lucky_block:add_blocks({
 		{"dro", {"teleport_potion:potion"}, 2},
 		{"tel"},
 		{"dro", {"teleport_potion:pad"}, 1},
-		{"lig"},
+		{"lig"}
 	})
 end
 
