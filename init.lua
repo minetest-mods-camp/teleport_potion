@@ -74,7 +74,7 @@ local function tp_effect(pos)
 		minsize = 0.5,
 		maxsize = 1.5,
 		texture = "teleport_potion_particle.png",
-		glow = 15,
+		glow = 15
 	})
 end
 
@@ -228,7 +228,7 @@ minetest.register_node("teleport_potion:potion", {
 	paramtype2 = "wallmounted",
 	walkable = false,
 	sunlight_propagates = true,
-	description = S("Teleport Potion (use to set destination; place to open portal)"),
+	description = S("Teleport Potion (use to set destination, place to open portal)"),
 	inventory_image = "teleport_potion_potion.png",
 	wield_image = "teleport_potion_potion.png",
 	groups = {dig_immediate = 3, vessel = 1},
@@ -286,8 +286,8 @@ minetest.register_craft({
 	recipe = {
 		{"", "mcl_core:diamond", ""},
 		{"mcl_core:diamond", "mcl_potions:glass_bottle", "mcl_core:diamond"},
-		{"", "mcl_core:diamond", ""},
-	},
+		{"", "mcl_core:diamond", ""}
+	}
 })
 else
 minetest.register_craft({
@@ -295,8 +295,8 @@ minetest.register_craft({
 	recipe = {
 		{"", "default:diamond", ""},
 		{"default:diamond", "vessels:glass_bottle", "default:diamond"},
-		{"", "default:diamond", ""},
-	},
+		{"", "default:diamond", ""}
+	}
 })
 end
 
@@ -311,7 +311,7 @@ minetest.register_node("teleport_potion:pad", {
 	legacy_wallmounted = true,
 	walkable = true,
 	sunlight_propagates = true,
-	description = S("Teleport Pad (use to set destination; place to open portal)"),
+	description = S("Teleport Pad (use to set destination, place to open portal)"),
 	inventory_image = "teleport_potion_pad.png",
 	wield_image = "teleport_potion_pad.png",
 	light_source = 5,
@@ -447,8 +447,8 @@ minetest.register_craft({
 	recipe = {
 		{"teleport_potion:potion", "mcl_core:glass", "teleport_potion:potion"},
 		{"mcl_core:glass", "mesecons:redstone", "mcl_core:glass"},
-		{"teleport_potion:potion", "mcl_core:glass", "teleport_potion:potion"},
-	},
+		{"teleport_potion:potion", "mcl_core:glass", "teleport_potion:potion"}
+	}
 })
 else
 minetest.register_craft({
