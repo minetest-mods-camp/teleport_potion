@@ -48,7 +48,7 @@ msgstr "Téléportation vers @1"
 
 #: init.lua
 msgid "Pad Active (@1,@2,@3)"
-msgstr "Pad activé (@1,@,2,@3)"
+msgstr "Pad activé (@1,@2,@3)"
 
 #: init.lua
 msgid "Teleport Pad coordinates failed!"

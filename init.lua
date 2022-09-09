@@ -24,6 +24,13 @@ local function is_creative(name)
 	return creative_mode_cache or minetest.check_player_privs(name, {creative = true})
 end
 
+-- choose texture for teleport pad
+local teleport_pad_texture = "teleport_potion_pad.png"
+
+if minetest.settings:get_bool("teleport_potion_use_old_texture") == true then
+	teleport_pad_texture = "teleport_potion_pad_v1.png"
+end
+
 -- make sure coordinates are valid
 local check_coordinates = function(str)
 
@@ -304,7 +311,7 @@ end
 local teleport_formspec_context = {}
 
 minetest.register_node("teleport_potion:pad", {
-	tiles = {"teleport_potion_pad.png", "teleport_potion_pad.png^[transformFY"},
+	tiles = {teleport_pad_texture, teleport_pad_texture .. "^[transformFY"},
 	drawtype = "nodebox",
 	paramtype = "light",
 	paramtype2 = "facedir",
@@ -312,8 +319,8 @@ minetest.register_node("teleport_potion:pad", {
 	walkable = true,
 	sunlight_propagates = true,
 	description = S("Teleport Pad (use to set destination, place to open portal)"),
-	inventory_image = "teleport_potion_pad.png",
-	wield_image = "teleport_potion_pad.png",
+	inventory_image = teleport_pad_texture,
+	wield_image = teleport_pad_texture,
 	light_source = 5,
 	groups = {snappy = 3},
 	node_box = {
@@ -369,15 +376,9 @@ minetest.register_node("teleport_potion:pad", {
 		end
 
 		local meta = minetest.get_meta(pos)
-		local coords = {
-			x = meta:get_int("x"),
-			y = meta:get_int("y"),
-			z = meta:get_int("z")
-		}
-		local coords = coords.x .. "," .. coords.y .. "," .. coords.z
+		local coords = meta:get_int("x") .. "," .. meta:get_int("y") .. "," .. meta:get_int("z")
 		local desc = meta:get_string("desc")
-
-		formspec = "field[desc;" .. S("Description") .. ";"
+		local formspec = "field[desc;" .. S("Description") .. ";"
 				.. minetest.formspec_escape(desc) .. "]"
 
 		-- Only allow privileged players to change coordinates
@@ -410,6 +411,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	teleport_formspec_context[name] = nil
 
+	if fields.control == nil and fields.desc == nil then
+		return false
+	end
+
 	local meta = minetest.get_meta(context.pos)
 
 	-- Coordinates were changed
@@ -427,8 +432,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	end
 
 	-- Update infotext
-	if fields.desc and fields.desc ~= "" then
+	if fields.desc then
 		meta:set_string("desc", fields.desc)
+	end
+
+	if fields.desc and fields.desc ~= "" then
 		meta:set_string("infotext", S("Teleport to @1", fields.desc))
 	else
 		local coords = minetest.string_to_pos("(" .. context.coords .. ")")

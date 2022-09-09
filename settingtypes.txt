@@ -1,0 +1,2 @@
+# If enabled texture pad will use the old texture
+teleport_potion_use_old_texture (Use old texture for teleport pad) bool false

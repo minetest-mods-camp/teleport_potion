@@ -7,6 +7,7 @@ https://forum.minetest.net/viewtopic.php?f=9&t=9234
 
 Change log:
 
+- 1.3 - Added some formspec checks and switch to enable old teleport pad texture (thanks mazes 80)
 - 1.2 - New teleport pad texture, code tweaks to work with minetest 5.x
 - 1.1 - Using 0.4.16+ code changes, can only teleport players now, added MineClone2 crafts and spanish translation
 - 1.0 - Added changes by maybe_dragon to bookmark teleport destination before using pads and potions
