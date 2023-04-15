@@ -1,5 +1,5 @@
 
---= Teleport Potion mod by TenPlus1 (SFX are license free)
+--= Teleport Potion mod by TenPlus1
 
 -- Craft teleport potion or pad, use to bookmark location, place to open
 -- portal or place pad, portals show a blue flame that you can walk into
@@ -64,26 +64,30 @@ local check_coordinates = function(str)
 	return {x = x, y = y, z = z}
 end
 
--- particle effects
-local function tp_effect(pos)
+-- particle effect
+local effect = function(pos, amount, texture, min_size, max_size, radius, gravity, glow)
+
+	radius = radius or 2
+	gravity = gravity or -10
 
 	minetest.add_particlespawner({
-		amount = 20,
+		amount = amount,
 		time = 0.25,
 		minpos = pos,
 		maxpos = pos,
-		minvel = {x = -2, y = 1, z = -2},
-		maxvel = {x = 2,  y = 2,  z = 2},
-		minacc = {x = 0, y = -2, z = 0},
-		maxacc = {x = 0, y = -4, z = 0},
+		minvel = {x = -radius, y = -radius, z = -radius},
+		maxvel = {x = radius, y = radius, z = radius},
+		minacc = {x = 0, y = gravity, z = 0},
+		maxacc = {x = 0, y = gravity, z = 0},
 		minexptime = 0.1,
 		maxexptime = 1,
-		minsize = 0.5,
-		maxsize = 1.5,
-		texture = "teleport_potion_particle.png",
-		glow = 15
+		minsize = min_size or 0.5,
+		maxsize = max_size or 1.0,
+		texture = texture,
+		glow = glow
 	})
 end
+
 
 local teleport_destinations = {}
 
@@ -91,7 +95,7 @@ local function set_teleport_destination(playername, dest)
 
 	teleport_destinations[playername] = dest
 
-	tp_effect(dest)
+	effect(dest, 20, "teleport_potion_particle.png", 0.5, 1.5, 1, 7, 15)
 
 	minetest.sound_play("portal_open", {
 			pos = dest, gain = 1.0, max_hear_distance = 10}, true)
@@ -120,6 +124,7 @@ minetest.register_node("teleport_potion:portal", {
 	sunlight_propagates = true,
 	damage_per_second = 1, -- walking into portal hurts player
 	groups = {not_in_creative_inventory = 1},
+	drop = {},
 
 	-- start timer when portal appears
 	on_construct = function(pos)
@@ -134,8 +139,8 @@ minetest.register_node("teleport_potion:portal", {
 
 		minetest.remove_node(pos)
 	end,
+
 	on_blast = function() end,
-	drop = {}
 })
 
 -- Throwable potion
@@ -152,18 +157,8 @@ local function throw_potion(itemstack, player)
 	local dir = player:get_look_dir()
 	local velocity = 20
 
-	obj:set_velocity({
-		x = dir.x * velocity,
-		y = dir.y * velocity,
-		z = dir.z * velocity
-	})
-
-	obj:set_acceleration({
-		x = dir.x * -3,
-		y = -9.5,
-		z = dir.z * -3
-	})
-
+	obj:set_velocity({x = dir.x * velocity, y = dir.y * velocity, z = dir.z * velocity})
+	obj:set_acceleration({x = dir.x * -3, y = -9.5, z = dir.z * -3})
 	obj:set_yaw(player:get_look_horizontal())
 	obj:get_luaentity().player = player
 end
@@ -195,24 +190,30 @@ potion_entity.on_step = function(self, dtime)
 		local vel = self.object:get_velocity()
 
 		-- only when potion hits something physical
-		if vel.x == 0
-		or vel.y == 0
-		or vel.z == 0 then
+		if vel.x == 0 or vel.y == 0 or vel.z == 0 then
 
 			if self.player ~= "" then
 
 				-- round up coords to fix glitching through doors
 				self.lastpos = vector.round(self.lastpos)
 
+				local oldpos = self.player:get_pos()
+
+				-- play sound and disappearing particle effect at current position
+				minetest.sound_play("portal_close", {
+						pos = oldpos, gain = 1.0, max_hear_distance = 5}, true)
+
+				oldpos.y = oldpos.y + 1
+
+				effect(oldpos, 25, "teleport_potion_particle.png", 2, 2, 1, -10, 15)
+
+				-- teleport to new position, play sound and show appear effect
 				self.player:set_pos(self.lastpos)
 
 				minetest.sound_play("portal_close", {
-					pos = self.lastpos,
-					gain = 1.0,
-					max_hear_distance = 5
-				}, true)
+						pos = self.lastpos, gain = 1.0, max_hear_distance = 5}, true)
 
-				tp_effect(self.lastpos)
+				effect(self.lastpos, 20, "teleport_potion_particle.png", 2, 2, 1, 10, 15)
 			end
 
 			self.object:remove()
@@ -274,7 +275,7 @@ minetest.register_node("teleport_potion:potion", {
 			meta:set_int("z", dest.z)
 
 			-- Portal open effect and sound
-			tp_effect(pos)
+			effect(pos, 20, "teleport_potion_particle.png", 0.5, 1.5, 1, 7, 15)
 
 			minetest.sound_play("portal_open", {
 					pos = pos, gain = 1.0, max_hear_distance = 10}, true)
@@ -358,6 +359,8 @@ minetest.register_node("teleport_potion:pad", {
 
 		meta:set_string("infotext", S("Pad Active (@1,@2,@3)",
 				dest.x, dest.y, dest.z))
+
+		effect(pos, 20, "teleport_potion_particle.png", 0.5, 1.5, 1, 7, 15)
 
 		minetest.sound_play("portal_open", {
 				pos = pos,	 gain = 1.0, max_hear_distance = 10}, true)
@@ -506,13 +509,19 @@ minetest.register_abm({
 					pos = pos,
 					gain = 1.0,
 					max_hear_distance = 5
+
 				}, true)
+
+				pos.y = pos.y + 1
+
+				-- particle effect on disappear
+				effect(pos, 25, "teleport_potion_particle.png", 2, 2, 1, -10, 15)
 
 				-- move player
 				objs[n]:set_pos(target_coords)
 
 				-- paricle effects on arrival
-				tp_effect(target_coords)
+				effect(target_coords, 20, "teleport_potion_particle.png", 2, 2, 1, 10, 15)
 
 				-- play sound on destination end
 				minetest.sound_play("portal_close", {
